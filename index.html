@@ -76,21 +76,38 @@
             const date = document.getElementById('date').value;
             const description = document.getElementById('description').value.trim();
 
+            // Error Handling
             if (!amount || !description) {
-                alert('Please fill out both Amount and Description.');
+                // Triggers an error vibration and a native Telegram popup
+                tg.HapticFeedback.notificationOccurred('error');
+                tg.showAlert('Please fill out both Amount and Description.');
                 return;
             }
 
+            // --- THE UPGRADE: Visual Feedback ---
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Sending... 🚀";
+            btn.disabled = true;           // Prevents double-clicking
+            btn.style.opacity = "0.7";     // Dims the button slightly
+
+            // --- THE UPGRADE: Physical Feedback ---
+            // Triggers a satisfying 'success' vibration pulse on your phone
+            tg.HapticFeedback.notificationOccurred('success');
+
             // Package the data into a JSON string
             const payload = {
-                date: date || null, // Will send null if left empty (handled by Python as 'today')
+                date: date || null,
                 amount: amount,
                 description: description
             };
 
-            // This line fires the data back into the Telegram Chat!
-            tg.sendData(JSON.stringify(payload));
-            tg.close(); // Close the web form window automatically
+            // --- THE UPGRADE: Pacing ---
+            // Wait 600 milliseconds (just over half a second) before closing 
+            // so the user actually sees the button change and feels the vibration.
+            setTimeout(() => {
+                tg.sendData(JSON.stringify(payload));
+                tg.close();
+            }, 600);
         });
     </script>
 </body>
